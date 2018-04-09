@@ -1,4 +1,5 @@
 Flask
 gunicorn
-psycopg2
+SQLAlchemy
 requests
+Flask-Migrate

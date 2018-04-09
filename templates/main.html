@@ -2,9 +2,10 @@
 <html>
    <body>
    	<h1>List of Activities</h1>
+   	<h2>{{message}}</h2>
    	<ul>
-    {% for activity in activities if activity.start_latitude %}
-      <li>{{ activity.name }}: {{activity.start_latitude}}, {{activity.start_longitude}}</li>
+    {% for activity in activities if activity.latitude %}
+      <li>{{ activity.strava_activity_name }}: {{activity.latitude}}, {{activity.longitude}}</li>
     {% endfor %}
 	</ul>
    </body>
