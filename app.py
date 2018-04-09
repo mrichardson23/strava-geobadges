@@ -96,7 +96,8 @@ def getlocations():
 def update():
 	messages = []
 	if request.method == 'GET':
-		return render_template('setup.html', message="Make changes and enter password to submit.")
+		messages.append("Make changes and enter password to submit.")
+		return render_template('setup.html', messages=messages)
 	if request.method == 'POST':
 		if request.form['psw'] == SETUP_PASSWORD:
 			for action in request.form.getlist('action'):
