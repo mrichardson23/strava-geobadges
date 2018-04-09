@@ -1,8 +1,11 @@
 <!doctype html>
 <html>
    <body>
-   
-      <h1>Hello {{ name }}!</h1>
-      
+   	<h1>List of Activities</h1>
+   	<ul>
+    {% for activity in activities %}
+      <li>{{ activity.name }}: {{activity.start_latitude}}, {{activity.start_longitude}}</li>
+    {% endfor %}
+	</ul>
    </body>
 </html>
