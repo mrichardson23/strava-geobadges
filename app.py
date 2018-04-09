@@ -35,13 +35,14 @@ def refresh():
 	a = requests.get('https://www.strava.com/api/v3/athlete/activities?per_page=200', params=payload)
 	strava_activities = a.json()
 	for strava_activity in strava_activities:
-		x = Activity()
-		x.strava_user_id = 3444316
-		x.strava_activity_id = strava_activity['id']
-		x.strava_activity_name = strava_activity['name']
-		x.latitude = strava_activity['start_latitude']
-		x.longitude = strava_activity['start_longitude']
-		db.session.add(x)
+		if strava_activity['start_latitude'] is not None:
+			x = Activity()
+			x.strava_user_id = 3444316
+			x.strava_activity_id = strava_activity['id']
+			x.strava_activity_name = strava_activity['name']
+			x.latitude = strava_activity['start_latitude']
+			x.longitude = strava_activity['start_longitude']
+			db.session.add(x)
 	db.session.commit()
 	return render_template('main.html', activities = a.json(), message="Records added.")
 
