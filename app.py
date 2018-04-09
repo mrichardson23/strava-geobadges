@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
@@ -10,6 +10,7 @@ import googlemaps
 DATABASE_URL = os.environ['DATABASE_URL']
 STRAVA_TOKEN = os.environ['STRAVA_TOKEN']
 GOOGLE_MAPS_KEY = os.environ['GOOGLE_MAPS_KEY']
+SETUP_PASSWORD = os.environ['SETUP_PASSWORD']
 FETCH_COUNT = 200
 
 app = Flask(__name__)
@@ -47,7 +48,6 @@ def homepage():
 	countries = set(countries)
 	return render_template('main.html', states=states, countries=countries)
 
-@app.route('/fetch-strava')
 def fetchstrava():
 	payload = {'access_token': STRAVA_TOKEN}
 	count = 0
@@ -72,16 +72,14 @@ def fetchstrava():
 					db.session.add(x)
 					count = count + 1
 	db.session.commit()
-	output = "Saved " + str(count) + " records from Strava. Activity type: " + strava_activities[0]['type']
-	return render_template('debug.html', output=output)
+	return count
 
-@app.route('/getlocations')
 def getlocations():
-	activities = db.session.query(Activity).filter_by(strava_user_id=3444316)
+	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(country_long=None)
 	count = 0
 	for activity in activities:
 		gmaps_output = gmaps.reverse_geocode((activity.latitude, activity.longitude))
-		row = db.session.query(Activity).filter(Activity.strava_activity_id == activity.strava_activity_id).first()
+		row = db.session.query(Activity).filter(Activity.id == activity.id).first()
 		address_components = gmaps_output[0]['address_components']
 		for address_component in address_components:
 			if address_component['types'][0] == 'administrative_area_level_1':
@@ -92,8 +90,25 @@ def getlocations():
 				row.country_short = address_component['short_name']
 		db.session.commit()
 		count = count + 1
-	output = "Updated records: " + str(count)
-	return render_template('debug.html', output = output)
+	return count
+
+@app.route('/setup', methods=['GET', 'POST'])
+def update():
+	messages = []
+	if request.method == 'GET':
+		return render_template('setup.html', message="Make changes and enter password to submit.")
+	if request.method == 'POST':
+		if request.form['psw'] == SETUP_PASSWORD:
+			for action in request.form.getlist('action'):
+				if action == "strava":
+					count = fetchstrava()
+					messages.append("Fetched " + str(count) + " activities from Strava.")
+				if action == "geocode":
+					count = getlocations()
+					messages.append("Geocoded " + str(count) + " activities.")
+		else:
+			messages.append("Wrong password!")
+		return render_template('setup.html', messages=messages)
 
 if __name__ == '__main__':
 	app.run(debug=True, use_reloader=True)

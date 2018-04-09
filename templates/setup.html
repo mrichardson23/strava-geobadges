@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+   <body>
+    <h1>Setup</h1>
+    <h2>Messages:</h2>
+    <ul>
+      {% for message in messages %}
+      <li>{{message}}</li>
+      {% endfor %}
+    </ul>
+   	<form action="/setup" method="post">
+      <input type="checkbox" name="action" value="strava"> Download Strava Activities<br>
+      <input type="checkbox" name="action" value="geocode"> Reverse Geocode Activities<br>
+      Password:
+      <input type="password" name="psw">
+      <input type="submit" value="Update">
+    </form>
+   </body>
+</html>
