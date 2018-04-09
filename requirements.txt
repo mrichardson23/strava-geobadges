@@ -4,3 +4,4 @@ SQLAlchemy
 requests
 Flask-Migrate
 psycopg2
+googlemaps
