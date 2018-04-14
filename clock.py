@@ -14,6 +14,6 @@ from app import Activity
 def timed_job():
 	last_record = db.session.query(Activity).order_by(Activity.fetch_time.desc()).first()
 	after_time = last_record.fetch_time
+	print("Checking Strava for activities since: " + str(after_time))
     strava_result = q.enqueue(fetchstrava, after_time=after_time)
-    
 sched.start()

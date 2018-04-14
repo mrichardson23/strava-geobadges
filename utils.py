@@ -74,6 +74,7 @@ def fetchstrava(after_time=0):
 					db.session.add(x)
 					count = count + 1
 	db.session.commit()
+	print("Imported " + str(count) + "activities from Strava.")
 	return count
 
 def getlocations():
