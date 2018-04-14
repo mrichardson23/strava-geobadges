@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
-   <body>
+   <body bgcolor="#D3D3D3">
    	<h1>Where Matt has run:</h1>
-   	<h2>U.S. States</h2>
+   	<h2>U.S. States and Territories</h2>
    	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
       <li><a href="/state/{{place.state_short}}">{{ place.state_long }}</a></li>{% endif %}{% endfor %}
@@ -13,5 +13,13 @@
 	<ul>{% for place in places|unique(attribute="country_short")|sort(attribute="country_long") %}
       <li><a href="/country/{{place.country_short}}">{{ place.country_long }}</a></li>{% endfor %}
 	</ul>
+
+  <h2>Patch Collection</h2>
+  {% for place in places|unique(attribute="country_short")|sort(attribute="country_long") %}
+    <img src="{{url_for('static', filename='images/country-flags/' + place.country_short + '.png')}}" height=75 title="Flag of {{place.country_long}}">
+  {% endfor %}
+  {% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
+      {% if place.country_short == "US"%}
+      <img src="{{url_for('static', filename='images/state-flags/' + place.state_short + '.png')}}" height=75 title="Flag of {{place.state_long}}">{% endif %}{% endfor %}
    </body>
 </html>
