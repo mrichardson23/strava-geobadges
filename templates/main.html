@@ -3,14 +3,14 @@
    <body>
    	<h1>Where Matt has run:</h1>
    	<h2>U.S. States</h2>
-   	<ul>{% for place in places|unique(attribute="state_short") %}
+   	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
       <li><a href="/state/{{place.state_short}}">{{ place.state_long }}</a></li>{% endif %}{% endfor %}
 
 	</ul>
 
 	<h2>Countries</h2>
-	<ul>{% for place in places|unique(attribute="country_short") %}
+	<ul>{% for place in places|unique(attribute="country_short")|sort(attribute="country_long") %}
       <li><a href="/country/{{place.country_short}}">{{ place.country_long }}</a></li>{% endfor %}
 	</ul>
    </body>
