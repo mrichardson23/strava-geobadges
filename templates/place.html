@@ -1,0 +1,9 @@
+<!doctype html>
+<html>
+   <body>
+   	<h1>{{place}}</h1>
+   	<ul>{% for activity in activities %}
+      <li><a href="https://www.strava.com/activities/{{activity.strava_activity_id}}">{{ activity.strava_activity_name }}</a></li>{% endfor %}
+	</ul>
+   </body>
+</html>

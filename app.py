@@ -46,20 +46,40 @@ class User(db.Model):
 	strava_user_id = db.Column(db.Integer)
 	most_recent_download = db.Column(db.BigInteger)
 
+class Place():
+	latitude = 0.0
+	longitude = 0.0
+	country_long = ""
+	state_long = ""
+	country_short = ""
+	state_short = ""
+
 db.create_all()
 
 @app.route('/')
 def homepage():
 	activities = db.session.query(Activity).filter_by(strava_user_id=3444316)
-	states = []
-	countries = []
+	places = []
 	for activity in activities:
-		countries.append(activity.country_long)
-		if activity.country_short == "US":
-			states.append(activity.state_long)
-	states = set(states)
-	countries = set(countries)
-	return render_template('main.html', states=states, countries=countries)
+		x = Place()
+		x.latitude = activity.latitude
+		x.longitude = activity.longitude
+		x.country_long = activity.country_long
+		x.country_short = activity.country_short
+		x.state_long = activity.state_long
+		x.state_short = activity.state_short
+		places.append(x)
+	return render_template('main.html', places = places)
+
+@app.route('/state/<place>')
+def show_state(place):
+	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(state_short=place)
+	return render_template('place.html', activities = activities, place=place)
+
+@app.route('/country/<place>')
+def show_country(place):
+	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(country_short=place)
+	return render_template('place.html', activities = activities, place=place)
 
 @app.route('/setup', methods=['GET', 'POST'])
 def update():
