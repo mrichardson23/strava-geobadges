@@ -10,10 +10,10 @@ sched = BlockingScheduler()
 
 from app import Activity
 
-@sched.scheduled_job('interval', minutes=10)
+@sched.scheduled_job('interval', minutes=2)
 def timed_job():
 	last_record = db.session.query(Activity).order_by(Activity.fetch_time.desc()).first()
-	if last_record.fetch_time:
+	if last_record:
 		after_time = last_record.fetch_time
 	else:
 		after_time = 0
