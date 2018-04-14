@@ -30,13 +30,9 @@ class Activity(db.Model):
 	state_long = db.Column(db.String(140))
 	country_short = db.Column(db.String(5))
 	state_short = db.Column(db.String(140))
+	distance = db.Column(db.Integer)
+	start_date = db.Column(db.String(22))
 	fetch_time = db.Column(db.Integer)
-
-
-class User(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	strava_user_id = db.Column(db.Integer)
-	most_recent_download = db.Column(db.BigInteger)
 
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
@@ -61,6 +57,8 @@ def fetchstrava(after_time=0):
 					x.strava_activity_name = strava_activity['name']
 					x.latitude = strava_activity['start_latitude']
 					x.longitude = strava_activity['start_longitude']
+					x.distance = strava_activity['distance']
+					x.start_date = strava_activity['start_date']
 					gmaps_output = gmaps.reverse_geocode((strava_activity['start_latitude'], strava_activity['start_longitude']))
 					address_components = gmaps_output[0]['address_components']
 					for address_component in address_components:
@@ -77,20 +75,3 @@ def fetchstrava(after_time=0):
 	print("Imported " + str(count) + "activities from Strava.")
 	return count
 
-def getlocations():
-	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(country_long=None)
-	count = 0
-	for activity in activities:
-		gmaps_output = gmaps.reverse_geocode((activity.latitude, activity.longitude))
-		row = db.session.query(Activity).filter(Activity.id == activity.id).first()
-		address_components = gmaps_output[0]['address_components']
-		for address_component in address_components:
-			if address_component['types'][0] == 'administrative_area_level_1':
-				row.state_long = address_component['long_name']
-				row.state_short = address_component['short_name']
-			if address_component['types'][0] == 'country':
-				row.country_long = address_component['long_name']
-				row.country_short = address_component['short_name']
-		db.session.commit()
-		count = count + 1
-	return count

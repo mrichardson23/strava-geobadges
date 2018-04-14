@@ -39,12 +39,9 @@ class Activity(db.Model):
 	state_long = db.Column(db.String(140))
 	country_short = db.Column(db.String(5))
 	state_short = db.Column(db.String(140))
+	distance = db.Column(db.Integer)
+	start_date = db.Column(db.String(22))
 	fetch_time = db.Column(db.Integer)
-
-class User(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	strava_user_id = db.Column(db.Integer)
-	most_recent_download = db.Column(db.BigInteger)
 
 class Place():
 	latitude = 0.0
