@@ -70,13 +70,13 @@ def homepage():
 
 @app.route('/state/<place>')
 def show_state(place):
-	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(state_short=place)
+	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(state_short=place).order_by(Activity.start_date.desc())
 	place = activities[0].state_long
 	return render_template('place.html', activities = activities, place=place)
 
 @app.route('/country/<place>')
 def show_country(place):
-	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(country_short=place)
+	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter_by(country_short=place).order_by(Activity.start_date.desc())
 	place = activities[0].country_long
 	return render_template('place.html', activities = activities, place=place)
 
