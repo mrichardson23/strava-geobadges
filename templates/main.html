@@ -16,10 +16,10 @@
 
   <h2>Patch Collection</h2>
   {% for place in places|unique(attribute="country_short")|sort(attribute="country_long") %}
-    <img src="{{url_for('static', filename='images/country-flags/' + place.country_short + '.png')}}" height=75 title="Flag of {{place.country_long}}">
+    <img src="https://s3.amazonaws.com/strava-geobadges/images/country-flags/{{place.country_short|lower}}.png" height=75 title="Flag of {{place.country_long}}">
   {% endfor %}
   {% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
-      <img src="{{url_for('static', filename='images/state-flags/' + place.state_short + '.png')}}" height=75 title="Flag of {{place.state_long}}">{% endif %}{% endfor %}
+      <img src="https://s3.amazonaws.com/strava-geobadges/images/state-flags/{{place.state_short|lower}}.png" height=75 title="Flag of {{place.state_long}}">{% endif %}{% endfor %}
    </body>
 </html>
