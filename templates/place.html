@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
    <body>
-   	<h1>Matt's runs in {{place}}</h1>
+   	<h1>Matt's runs in {{place}}, totaling {{(total_distance * 0.00062137)|round(1)}} miles</h1>
    	<ul>{% for activity in activities %}
       <li><a href="https://www.strava.com/activities/{{activity.strava_activity_id}}">{{ activity.strava_activity_name }}</a> {{ (activity.distance * 0.00062137)|round(1) }} miles on {{ activity.start_date }}</li>{% endfor %}
 	</ul>
