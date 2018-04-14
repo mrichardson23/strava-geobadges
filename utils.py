@@ -75,3 +75,26 @@ def fetchstrava(after_time=0):
 	print("Imported " + str(count) + "activities from Strava.")
 	return count
 
+def activityNameUpdate():
+	payload = {'access_token': STRAVA_TOKEN}
+	count = 0
+	done = False
+	page = 1
+	while done is False:
+		a = requests.get('https://www.strava.com/api/v3/athlete/activities?after=' + str(after_time) + '&per_page=' + str(FETCH_COUNT) + '&page=' + str(page), params=payload)
+		strava_activities = a.json()
+		if len(strava_activities) < FETCH_COUNT:
+			done = True
+		else:
+			page = page + 1
+		for strava_activity in strava_activities:
+			matched_record = db.session.query(Activity).filter(Activity.strava_activity_id==strava_activity['id']).first()
+			if strava_activity['name'] != matched_record.strava_activity_name:
+				matched_record.strava_activity_name = strava_activity['name']
+				count = count + 1
+	if count > 0:
+		db.session.commit()
+		print("Updated " + str(count) + "activity names from Strava.")
+	else:
+		print("No activity names changed.")
+	return count

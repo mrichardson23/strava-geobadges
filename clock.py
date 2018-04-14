@@ -12,7 +12,7 @@ sched = BlockingScheduler()
 from app import Activity
 
 @sched.scheduled_job('interval', minutes=1)
-def timed_job():
+def activity_checker():
 	last_record = db.session.query(Activity).order_by(Activity.fetch_time.desc()).first()
 	if last_record:
 		after_time = last_record.fetch_time
@@ -20,4 +20,11 @@ def timed_job():
 		after_time = 0
 	print("Checking Strava for activities since: " + str(after_time))
 	strava_result = q.enqueue(utils.fetchstrava, after_time=after_time)
+
+
+@sched.scheduled_job('interval', minutes=1)
+def activity_name_updater():
+	print("Updating activity names...")
+	strava_result = q.enqueue(utils.activityNameUpdate)
+
 sched.start()
