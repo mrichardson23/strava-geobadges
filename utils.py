@@ -75,7 +75,7 @@ def fetchstrava(after_time=0):
 	print("Imported " + str(count) + "activities from Strava.")
 	return count
 
-def activityNameUpdate():
+def activityNameUpdate(after_time=0):
 	payload = {'access_token': STRAVA_TOKEN}
 	count = 0
 	done = False
