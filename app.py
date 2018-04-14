@@ -17,6 +17,7 @@ FETCH_COUNT = 200
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -24,7 +25,8 @@ migrate = Migrate(app, db)
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
 q = Queue(connection=conn)
-from utils import fetchstrava, getlocations
+
+from utils import fetchstrava
 
 class Activity(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +39,7 @@ class Activity(db.Model):
 	state_long = db.Column(db.String(140))
 	country_short = db.Column(db.String(5))
 	state_short = db.Column(db.String(140))
+	fetch_time = db.Column(db.Integer)
 
 class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)

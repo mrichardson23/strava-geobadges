@@ -1,6 +1,7 @@
 import os
 import requests
 import googlemaps
+import time
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -13,6 +14,7 @@ FETCH_COUNT = 200
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -28,6 +30,8 @@ class Activity(db.Model):
 	state_long = db.Column(db.String(140))
 	country_short = db.Column(db.String(5))
 	state_short = db.Column(db.String(140))
+	fetch_time = db.Column(db.Integer)
+
 
 class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -36,13 +40,13 @@ class User(db.Model):
 
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
-def fetchstrava():
+def fetchstrava(after_time=0):
 	payload = {'access_token': STRAVA_TOKEN}
 	count = 0
 	done = False
 	page = 1
 	while done is False:
-		a = requests.get('https://www.strava.com/api/v3/athlete/activities?per_page=' + str(FETCH_COUNT) + '&page=' + str(page), params=payload)
+		a = requests.get('https://www.strava.com/api/v3/athlete/activities?after=' + str(after_time) + '&per_page=' + str(FETCH_COUNT) + '&page=' + str(page), params=payload)
 		strava_activities = a.json()
 		if len(strava_activities) < FETCH_COUNT:
 			done = True
@@ -57,6 +61,16 @@ def fetchstrava():
 					x.strava_activity_name = strava_activity['name']
 					x.latitude = strava_activity['start_latitude']
 					x.longitude = strava_activity['start_longitude']
+					gmaps_output = gmaps.reverse_geocode((strava_activity['start_latitude'], strava_activity['start_longitude']))
+					address_components = gmaps_output[0]['address_components']
+					for address_component in address_components:
+						if address_component['types'][0] == 'administrative_area_level_1':
+							x.state_long = address_component['long_name']
+							x.state_short = address_component['short_name']
+						if address_component['types'][0] == 'country':
+							x.country_long = address_component['long_name']
+							x.country_short = address_component['short_name']
+					x.fetch_time = int(time.time())
 					db.session.add(x)
 					count = count + 1
 	db.session.commit()

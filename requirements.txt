@@ -6,3 +6,4 @@ Flask-Migrate
 psycopg2
 googlemaps
 rq
+APScheduler
