@@ -18,5 +18,5 @@ def timed_job():
 	else:
 		after_time = 0
 	print("Checking Strava for activities since: " + str(after_time))
-    strava_result = q.enqueue(fetchstrava, after_time=after_time)
+	strava_result = q.enqueue(fetchstrava, after_time=after_time)
 sched.start()
