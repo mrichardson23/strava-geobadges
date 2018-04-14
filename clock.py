@@ -4,7 +4,7 @@ from worker import conn
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app import db
-from utils import fetchstrava
+import utils
 
 q = Queue(connection=conn)
 sched = BlockingScheduler()
@@ -19,5 +19,5 @@ def timed_job():
 	else:
 		after_time = 0
 	print("Checking Strava for activities since: " + str(after_time))
-	strava_result = q.enqueue(fetchstrava, after_time=after_time)
+	strava_result = q.enqueue(utils.fetchstrava, after_time=after_time)
 sched.start()
