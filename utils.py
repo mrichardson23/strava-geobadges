@@ -89,9 +89,10 @@ def activityNameUpdate(after_time=0):
 			page = page + 1
 		for strava_activity in strava_activities:
 			matched_record = db.session.query(Activity).filter(Activity.strava_activity_id==strava_activity['id']).first()
-			if strava_activity['name'] != matched_record.strava_activity_name:
-				matched_record.strava_activity_name = strava_activity['name']
-				count = count + 1
+			if matched_record:
+				if strava_activity['name'] != matched_record.strava_activity_name:
+					matched_record.strava_activity_name = strava_activity['name']
+					count = count + 1
 	if count > 0:
 		db.session.commit()
 		print("Updated " + str(count) + "activity names from Strava.")
