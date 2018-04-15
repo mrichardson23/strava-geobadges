@@ -5,6 +5,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app import db
 import utils
+import time
 
 q = Queue(connection=conn)
 sched = BlockingScheduler()
@@ -25,6 +26,7 @@ def activity_checker():
 @sched.scheduled_job('interval', minutes=1)
 def activity_name_updater():
 	print("Updating activity names...")
-	strava_result = q.enqueue(utils.activityNameUpdate)
+	after_time = int(time.time()) - 86400
+	strava_result = q.enqueue(utils.activityNameUpdate, after_time=after_time)
 
 sched.start()

@@ -72,7 +72,7 @@ def fetchstrava(after_time=0):
 					db.session.add(x)
 					count = count + 1
 	db.session.commit()
-	print("Imported " + str(count) + "activities from Strava.")
+	print("Imported " + str(count) + " activities from Strava.")
 	return count
 
 def activityNameUpdate(after_time=0):
@@ -95,7 +95,7 @@ def activityNameUpdate(after_time=0):
 					count = count + 1
 	if count > 0:
 		db.session.commit()
-		print("Updated " + str(count) + "activity names from Strava.")
+		print("Updated " + str(count) + " activity names from Strava.")
 	else:
 		print("No activity names changed.")
 	return count
