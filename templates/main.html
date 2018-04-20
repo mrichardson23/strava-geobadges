@@ -21,5 +21,7 @@
   {% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
       <img src="https://s3.amazonaws.com/strava-geobadges/images/state-flags/{{place.state_short|lower}}.png" height=75 title="Flag of {{place.state_long}}">{% endif %}{% endfor %}
+  <h2>About</h2>
+  <p>I created this page in order to motivate myself to keep running while I travel. I created it using the Strava API, the Google Maps API, Flask, Heroku, and PostgreSQL. <a href="https://github.com/mrichardson23/strava-geobadges">The source is available on Github.</a></p>
    </body>
 </html>
