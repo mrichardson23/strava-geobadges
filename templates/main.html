@@ -3,7 +3,7 @@
   <title>Where Matt has run</title>
    <body bgcolor="#D3D3D3">
    	<h1>Where Matt has run:</h1>
-   	<h2>U.S. States and Territories - {{ state_count }} total</h2>
+   	<h2>U.S. States and Territories - {{ state_count }} out of 56 total ({{ ((state_count/56)*100)|round(1) }}%)</h2>
    	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
       <li><a href="/state/{{place.state_short}}">{{ place.state_long }}</a></li>{% endif %}{% endfor %}
@@ -15,7 +15,7 @@
       <li><a href="/country/{{place.country_short}}">{{ place.country_long }}</a></li>{% endfor %}
 	</ul>
 
-  <h2>Years</h2>
+  <h2>Yearly data</h2>
   <ul>{% for year in years|unique %}
       <li><a href="/year/{{year}}">{{ year }}</a></li>{% endfor %}
   </ul>

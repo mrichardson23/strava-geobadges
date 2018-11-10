@@ -2,14 +2,13 @@
 <html>
    <body bgcolor="#D3D3D3">
    	<h1>Matt's runs in {{year}}</h1>
-
+   	<p><i>This data excludes indoor runs.</i></p>
    	<h2>Stats</h2>
    	<ul>
    		<li>Total distance: {{(total_distance * 0.00062137)|round(1)}} miles</li>
    		<li>Number of states: {{ state_count }}</li>
    		<li>Number of countries: {{country_count}}</li>
    	</ul>
-   	<p><i>These stats exclude indoor runs.</i></p>
    	<h2>U.S. States and Territories</h2>
    	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
