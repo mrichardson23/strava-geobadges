@@ -120,6 +120,8 @@ def show_year(year):
 	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter(Activity.start_date.like(year+'%')).order_by(Activity.start_date.desc())
 	total_distance = 0
 	places = []
+	states = []
+	countries = []
 	for activity in activities:
 		x = Place()
 		x.latitude = activity.latitude
@@ -129,9 +131,14 @@ def show_year(year):
 		x.state_long = activity.state_long
 		x.state_short = activity.state_short
 		places.append(x)
+		if activity.country_short == "US":
+			states.append(activity.state_short)
+		countries.append(activity.country_short)
 		total_distance = total_distance + activity.distance
+	country_count = len(set(countries))
+	state_count = len(set(states))
 
-	return render_template('year.html', activities = activities, year=year, total_distance=total_distance, places=places)
+	return render_template('year.html', activities = activities, year=year, total_distance=total_distance, places=places, state_count=state_count, country_count=country_count)
 
 if __name__ == '__main__':
 	app.run(debug=True, use_reloader=True)
