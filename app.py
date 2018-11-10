@@ -65,6 +65,8 @@ def homepage():
 	activities = db.session.query(Activity).filter_by(strava_user_id=3444316)
 	places = []
 	years = []
+	states = []
+	countries = []
 	for activity in activities:
 		x = Place()
 		x.latitude = activity.latitude
@@ -74,9 +76,14 @@ def homepage():
 		x.state_long = activity.state_long
 		x.state_short = activity.state_short
 		years.append(activity.start_date[:4])
+		if activity.country_short == "US":
+			states.append(activity.state_short)
+		countries.append(activity.country_short)
 		places.append(x)
+	country_count = len(set(countries))
+	state_count = len(set(states))
 
-	return render_template('main.html', places = places, years = years)
+	return render_template('main.html', places = places, years = years, country_count = country_count, state_count = state_count)
 
 @app.route('/state/<place>')
 def show_state(place):
