@@ -1,5 +1,14 @@
 <!doctype html>
 <html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+    body {
+      font-family:Roboto;
+    }
+    </style>
+    <title>Where Matt has run</title>
+  </head>
    <body bgcolor="#D3D3D3">
    	<h1>Matt's runs in {{place}}, totaling {{(total_distance * 0.00062137)|round(1)}} miles</h1>
    	<ul>{% for activity in activities %}

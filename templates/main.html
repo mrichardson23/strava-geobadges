@@ -1,9 +1,17 @@
 <!doctype html>
 <html>
-  <title>Where Matt has run</title>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <style>
+    body {
+      font-family:Roboto;
+    }
+    </style>
+    <title>Where Matt has run</title>
+  </head>
    <body bgcolor="#D3D3D3">
    	<h1>Where Matt has run:</h1>
-   	<h2>U.S. States and Territories - {{ state_count }} out of 56 total ({{ ((state_count/56)*100)|round(1) }}%)</h2>
+   	<h2>U.S. states and territories - {{ state_count }} out of 56 total ({{ ((state_count/56)*100)|round(1) }}%)</h2>
    	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
       <li><a href="/state/{{place.state_short}}">{{ place.state_long }}</a></li>{% endif %}{% endfor %}
