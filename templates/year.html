@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+   <body bgcolor="#D3D3D3">
+   	<h1>Matt's runs in {{year}}, totaling {{(total_distance * 0.00062137)|round(1)}} miles</h1>
+   	<h2>U.S. States and Territories</h2>
+   	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
+      {% if place.country_short == "US"%}
+      <li><a href="/state/{{place.state_short}}">{{ place.state_long }}</a></li>{% endif %}{% endfor %}
+
+	</ul>
+
+	<h2>Countries</h2>
+	<ul>{% for place in places|unique(attribute="country_short")|sort(attribute="country_long") %}
+      <li><a href="/country/{{place.country_short}}">{{ place.country_long }}</a></li>{% endfor %}
+	</ul>
+	<h2>Activities</h2>
+   	<ul>{% for activity in activities %}
+      <li><a href="https://www.strava.com/activities/{{activity.strava_activity_id}}">{{ activity.strava_activity_name }}</a> {{ (activity.distance * 0.00062137)|round(1) }} miles on {{ activity.start_date }}</li>{% endfor %}
+	</ul>
+   </body>
+</html>

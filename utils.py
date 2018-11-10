@@ -34,6 +34,13 @@ class Activity(db.Model):
 	start_date = db.Column(db.String(22))
 	fetch_time = db.Column(db.Integer)
 
+class PlaceTotal(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	place_type = db.Column(db.String(7))
+	short_name = db.Column(db.String(140))
+	total_count = db.Column(db.Integer)
+	total_distance = db.Column(db.Integer)
+
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
 def fetchstrava(after_time=0):
@@ -99,3 +106,28 @@ def activityNameUpdate(after_time=0):
 	else:
 		print("No activity names changed.")
 	return count
+
+def totals_update(): #WIP
+	activities = db.session.query(Activity).filter_by(strava_user_id=3444316) # Get all activities in DB
+	states = []
+	countries = []
+	for activity in activities:
+		states.append(activity.state_short)
+		countries.append(activity.country_short)
+	set(states)
+	set(countries)
+
+	for state in states:
+		count = 0
+		total_distance = 0
+		for activity in activities:
+			if activity.state_short == state:
+				count = count + 1
+				total_distance = total_distance + activity.distance
+
+
+
+
+
+
+

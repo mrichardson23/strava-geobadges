@@ -43,6 +43,13 @@ class Activity(db.Model):
 	start_date = db.Column(db.String(22))
 	fetch_time = db.Column(db.Integer)
 
+class PlaceTotal(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	place_type = db.Column(db.String(7))
+	short_name = db.Column(db.String(140))
+	total_count = db.Column(db.Integer)
+	total_distance = db.Column(db.Integer)
+
 class Place():
 	latitude = 0.0
 	longitude = 0.0
@@ -57,6 +64,7 @@ db.create_all()
 def homepage():
 	activities = db.session.query(Activity).filter_by(strava_user_id=3444316)
 	places = []
+	years = []
 	for activity in activities:
 		x = Place()
 		x.latitude = activity.latitude
@@ -65,8 +73,10 @@ def homepage():
 		x.country_short = activity.country_short
 		x.state_long = activity.state_long
 		x.state_short = activity.state_short
+		years.append(activity.start_date[:4])
 		places.append(x)
-	return render_template('main.html', places = places)
+
+	return render_template('main.html', places = places, years = years)
 
 @app.route('/state/<place>')
 def show_state(place):
@@ -104,6 +114,24 @@ def update():
 		else:
 			messages.append("Wrong password!")
 		return render_template('setup.html', messages=messages)
+
+@app.route('/year/<year>')
+def show_year(year):
+	activities = db.session.query(Activity).filter_by(strava_user_id=3444316).filter(Activity.start_date.like(year+'%')).order_by(Activity.start_date.desc())
+	total_distance = 0
+	places = []
+	for activity in activities:
+		x = Place()
+		x.latitude = activity.latitude
+		x.longitude = activity.longitude
+		x.country_long = activity.country_long
+		x.country_short = activity.country_short
+		x.state_long = activity.state_long
+		x.state_short = activity.state_short
+		places.append(x)
+		total_distance = total_distance + activity.distance
+
+	return render_template('year.html', activities = activities, year=year, total_distance=total_distance, places=places)
 
 if __name__ == '__main__':
 	app.run(debug=True, use_reloader=True)

@@ -15,6 +15,11 @@
       <li><a href="/country/{{place.country_short}}">{{ place.country_long }}</a></li>{% endfor %}
 	</ul>
 
+  <h2>Years</h2>
+  <ul>{% for year in years|unique %}
+      <li><a href="/year/{{year}}">{{ year }}</a></li>{% endfor %}
+  </ul>
+
   <h2>Patch Collection</h2>
   {% for place in places|unique(attribute="country_short")|sort(attribute="country_long") %}
     <img src="https://s3.amazonaws.com/strava-geobadges/images/country-flags/{{place.country_short|lower}}.png" height=75 title="Flag of {{place.country_long}}">
