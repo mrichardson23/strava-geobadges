@@ -153,8 +153,9 @@ def show_year(year):
 		total_distance = total_distance + activity.distance
 	country_count = len(set(countries))
 	state_count = len(set(states))
+	activity_count = activities.count()
 
-	return render_template('year.html', activities = activities, year=year, total_distance=total_distance, places=places, state_count=state_count, country_count=country_count)
+	return render_template('year.html', activities = activities, year=year, total_distance=total_distance, places=places, state_count=state_count, country_count=country_count, activity_count=activity_count)
 
 if __name__ == '__main__':
 	if debug:

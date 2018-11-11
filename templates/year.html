@@ -17,6 +17,8 @@
    		<li>Total distance: {{(total_distance * 0.00062137)|round(1)}} miles</li>
    		<li>Number of states: {{ state_count }}</li>
    		<li>Number of countries: {{country_count}}</li>
+      <li>Number of runs: {{activity_count}}</li>
+      <li>Average distance: {{ ((total_distance * 0.00062137) /  activity_count )|round(1) }} miles
    	</ul>
    	<h2>U.S. States and Territories</h2>
    	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
