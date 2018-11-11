@@ -12,7 +12,7 @@
    <body bgcolor="#D3D3D3">
    	<h1>Matt's runs in {{year}}</h1>
    	<p><i>This data excludes indoor runs.</i></p>
-   	<h2>Stats</h2>
+   	<h2>{{year}} stats</h2>
    	<ul>
    		<li>Total distance: {{(total_distance * 0.00062137)|round(1)}} miles</li>
    		<li>Number of states: {{ state_count }}</li>
@@ -20,7 +20,7 @@
       <li>Number of runs: {{activity_count}}</li>
       <li>Average distance: {{ ((total_distance * 0.00062137) /  activity_count )|round(1) }} miles
    	</ul>
-   	<h2>U.S. States and Territories</h2>
+   	<h2>U.S. States and territories</h2>
    	<ul>{% for place in places|unique(attribute="state_short")|sort(attribute="state_long") %}
       {% if place.country_short == "US"%}
       <li><a href="/state/{{place.state_short}}">{{ place.state_long }}</a></li>{% endif %}{% endfor %}
