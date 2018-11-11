@@ -9,13 +9,22 @@ import googlemaps
 from rq import Queue
 from worker import conn
 
+
 DATABASE_URL = os.environ['DATABASE_URL']
 STRAVA_TOKEN = os.environ['STRAVA_TOKEN']
 GOOGLE_MAPS_KEY = os.environ['GOOGLE_MAPS_KEY']
 SETUP_PASSWORD = os.environ['SETUP_PASSWORD']
 FETCH_COUNT = 200
 
+debug = True
+if 'ON_HEROKU' in os.environ:
+    debug = False
+
 app = Flask(__name__)
+if not debug:
+	from flask_sslify import SSLify
+	sslify = SSLify(app)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -148,4 +157,7 @@ def show_year(year):
 	return render_template('year.html', activities = activities, year=year, total_distance=total_distance, places=places, state_count=state_count, country_count=country_count)
 
 if __name__ == '__main__':
-	app.run(debug=True, use_reloader=True)
+	if debug:
+		app.run(debug=True, use_reloader=True)
+	else:
+		app.run()
