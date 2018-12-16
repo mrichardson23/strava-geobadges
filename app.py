@@ -94,6 +94,9 @@ def homepage():
 		years.append(activity.start_date[:4])
 		if activity.country_short == "US":
 			states.append(activity.state_short)
+		else: #  so that no nulls for state get passed to the template:
+			x.state_long = ""
+			x.state_short = ""
 		countries.append(activity.country_short)
 		places.append(x)
 	country_count = len(set(countries))
