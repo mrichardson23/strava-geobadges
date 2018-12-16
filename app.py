@@ -69,6 +69,13 @@ class Place():
 
 db.create_all()
 
+def fetchactivity(id=0):
+	payload = {'access_token': STRAVA_TOKEN}
+	a = requests.get('https://www.strava.com/api/v3/athlete/activities?id=' + str(id), params=payload)
+	strava_activities = a.json()
+	return str(strava_activities)
+
+
 @app.route('/')
 def homepage():
 	activities = db.session.query(Activity).filter_by(strava_user_id=3444316)
@@ -127,6 +134,8 @@ def update():
 				if action == "geocode":
 					geocode_result = q.enqueue(getlocations)
 					messages.append("Geocoding activities in the background.")
+				if action == "view_activity":
+					messages.append(fetchactivity(request.form['strava_id']))
 		else:
 			messages.append("Wrong password!")
 		return render_template('setup.html', messages=messages)
