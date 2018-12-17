@@ -161,6 +161,9 @@ def show_year(year):
 		places.append(x)
 		if activity.country_short == "US":
 			states.append(activity.state_short)
+		else: #  so that no nulls for state get passed to the template:
+			x.state_long = ""
+			x.state_short = ""
 		countries.append(activity.country_short)
 		total_distance = total_distance + activity.distance
 	country_count = len(set(countries))
