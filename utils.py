@@ -50,35 +50,39 @@ def fetchstrava(after_time=0):
 	page = 1
 	while done is False:
 		a = requests.get('https://www.strava.com/api/v3/athlete/activities?after=' + str(after_time) + '&per_page=' + str(FETCH_COUNT) + '&page=' + str(page), params=payload)
-		strava_activities = a.json()
-		if len(strava_activities) < FETCH_COUNT:
-			done = True
+		if a.status_code == 200:
+			strava_activities = a.json()
+			if len(strava_activities) < FETCH_COUNT:
+				done = True
+			else:
+				page = page + 1
+			for strava_activity in strava_activities:
+				if strava_activity['start_latitude'] is not None:
+					if strava_activity['type'] == 'Run':
+						x = Activity()
+						x.strava_user_id = strava_activity['athlete']['id']
+						x.strava_activity_id = strava_activity['id']
+						x.strava_activity_name = strava_activity['name']
+						x.latitude = strava_activity['start_latitude']
+						x.longitude = strava_activity['start_longitude']
+						x.distance = strava_activity['distance']
+						x.start_date = strava_activity['start_date']
+						gmaps_output = gmaps.reverse_geocode((strava_activity['start_latitude'], strava_activity['start_longitude']))
+						address_components = gmaps_output[0]['address_components']
+						for address_component in address_components:
+							if address_component['types'][0] == 'administrative_area_level_1':
+								x.state_long = address_component['long_name']
+								x.state_short = address_component['short_name']
+							if address_component['types'][0] == 'country':
+								x.country_long = address_component['long_name']
+								x.country_short = address_component['short_name']
+						x.fetch_time = int(time.time())
+						db.session.add(x)
+						count = count + 1
+			db.session.commit()
 		else:
-			page = page + 1
-		for strava_activity in strava_activities:
-			if strava_activity['start_latitude'] is not None:
-				if strava_activity['type'] == 'Run':
-					x = Activity()
-					x.strava_user_id = strava_activity['athlete']['id']
-					x.strava_activity_id = strava_activity['id']
-					x.strava_activity_name = strava_activity['name']
-					x.latitude = strava_activity['start_latitude']
-					x.longitude = strava_activity['start_longitude']
-					x.distance = strava_activity['distance']
-					x.start_date = strava_activity['start_date']
-					gmaps_output = gmaps.reverse_geocode((strava_activity['start_latitude'], strava_activity['start_longitude']))
-					address_components = gmaps_output[0]['address_components']
-					for address_component in address_components:
-						if address_component['types'][0] == 'administrative_area_level_1':
-							x.state_long = address_component['long_name']
-							x.state_short = address_component['short_name']
-						if address_component['types'][0] == 'country':
-							x.country_long = address_component['long_name']
-							x.country_short = address_component['short_name']
-					x.fetch_time = int(time.time())
-					db.session.add(x)
-					count = count + 1
-	db.session.commit()
+			print("Strava API error, response code: " + str(a.status_code))
+			done = True
 	print("Imported " + str(count) + " activities from Strava.")
 	return count
 
