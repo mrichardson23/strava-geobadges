@@ -93,17 +93,21 @@ def activityNameUpdate(after_time=0):
 	page = 1
 	while done is False:
 		a = requests.get('https://www.strava.com/api/v3/athlete/activities?after=' + str(after_time) + '&per_page=' + str(FETCH_COUNT) + '&page=' + str(page), params=payload)
-		strava_activities = a.json()
-		if len(strava_activities) < FETCH_COUNT:
-			done = True
+		if a.status_code == 200:
+			strava_activities = a.json()
+			if len(strava_activities) < FETCH_COUNT:
+				done = True
+			else:
+				page = page + 1
+			for strava_activity in strava_activities:
+				matched_record = db.session.query(Activity).filter(Activity.strava_activity_id==strava_activity['id']).first()
+				if matched_record:
+					if strava_activity['name'] != matched_record.strava_activity_name:
+						matched_record.strava_activity_name = strava_activity['name']
+						count = count + 1
 		else:
-			page = page + 1
-		for strava_activity in strava_activities:
-			matched_record = db.session.query(Activity).filter(Activity.strava_activity_id==strava_activity['id']).first()
-			if matched_record:
-				if strava_activity['name'] != matched_record.strava_activity_name:
-					matched_record.strava_activity_name = strava_activity['name']
-					count = count + 1
+			print("Strava API error:" + str(a.status_code))
+			done = True
 	if count > 0:
 		db.session.commit()
 		print("Updated " + str(count) + " activity names from Strava.")
