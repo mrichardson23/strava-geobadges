@@ -92,7 +92,8 @@ def fetchstrava(after_time=0):
 	return count
 
 def activityNameUpdate(after_time=0):
-	payload = {'Authorization': "Bearer " + STRAVA_TOKEN}
+	payload = {'Authorization': "Bearer " + STRAVA_TOKEN,
+				'access_token': STRAVA_TOKEN}
 	count = 0
 	done = False
 	page = 1
