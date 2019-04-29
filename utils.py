@@ -44,7 +44,7 @@ class PlaceTotal(db.Model):
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
 def fetchstrava(after_time=0):
-	payload = {'access_token': STRAVA_TOKEN}
+	payload = {'Authorization': "Bearer #" + STRAVA_TOKEN}
 	count = 0
 	done = False
 	page = 1
