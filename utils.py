@@ -44,7 +44,8 @@ class PlaceTotal(db.Model):
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
 def fetchstrava(after_time=0):
-	payload = {'Authorization': "Bearer " + STRAVA_TOKEN}
+	payload = {'Authorization': "Bearer " + STRAVA_TOKEN,
+				'access_token': STRAVA_TOKEN}
 	count = 0
 	done = False
 	page = 1
@@ -68,14 +69,17 @@ def fetchstrava(after_time=0):
 						x.distance = strava_activity['distance']
 						x.start_date = strava_activity['start_date']
 						gmaps_output = gmaps.reverse_geocode((strava_activity['start_latitude'], strava_activity['start_longitude']))
-						address_components = gmaps_output[0]['address_components']
-						for address_component in address_components:
-							if address_component['types'][0] == 'administrative_area_level_1':
-								x.state_long = address_component['long_name']
-								x.state_short = address_component['short_name']
-							if address_component['types'][0] == 'country':
-								x.country_long = address_component['long_name']
-								x.country_short = address_component['short_name']
+						if len(gmaps_output) > 0:
+							address_components = gmaps_output[0]['address_components']
+							for address_component in address_components:
+								if address_component['types'][0] == 'administrative_area_level_1':
+									x.state_long = address_component['long_name']
+									x.state_short = address_component['short_name']
+								if address_component['types'][0] == 'country':
+									x.country_long = address_component['long_name']
+									x.country_short = address_component['short_name']
+						else:
+							print("There was an issue reverse geocoding activity: " + strava_activity['name'])
 						x.fetch_time = int(time.time())
 						db.session.add(x)
 						count = count + 1
