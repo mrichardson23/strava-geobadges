@@ -11,6 +11,7 @@ q = Queue(connection=conn)
 sched = BlockingScheduler()
 
 from app import Activity
+from app import User
 
 @sched.scheduled_job('interval', minutes=60)
 def activity_checker():

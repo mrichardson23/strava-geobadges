@@ -34,6 +34,12 @@ class Activity(db.Model):
 	start_date = db.Column(db.String(22))
 	fetch_time = db.Column(db.Integer)
 
+class User(db.Model):
+	strava_user_id = db.Column(db.Integer, primary_key=True)
+	strava_access_token = db.Column(db.String(300))
+	strava_refresh_token = db.Column(db.String(300))
+	strava_access_token_expires_at = db.Column(db.Integer)
+
 class PlaceTotal(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	place_type = db.Column(db.String(7))
@@ -43,9 +49,10 @@ class PlaceTotal(db.Model):
 
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
-def fetchstrava(after_time=0):
-	payload = {'Authorization': "Bearer " + STRAVA_TOKEN,
-				'access_token': STRAVA_TOKEN}
+def fetchstrava(after_time=0, athlete_id=3444316):
+	user = db.session.query(User).filter_by(strava_user_id=athlete_id).one()
+	payload = {'Authorization': "Bearer " + user.strava_access_token,
+				'access_token': user.strava_access_token}
 	count = 0
 	done = False
 	page = 1
@@ -91,9 +98,10 @@ def fetchstrava(after_time=0):
 	print("Imported " + str(count) + " activities from Strava.")
 	return count
 
-def activityNameUpdate(after_time=0):
-	payload = {'Authorization': "Bearer " + STRAVA_TOKEN,
-				'access_token': STRAVA_TOKEN}
+def activityNameUpdate(after_time=0, athlete_id=3444316):
+	user = db.session.query(User).filter_by(strava_user_id=athlete_id).one()
+	payload = {'Authorization': "Bearer " + user.strava_access_token,
+				'access_token': user.strava_access_token}
 	count = 0
 	done = False
 	page = 1

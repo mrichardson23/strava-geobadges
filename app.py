@@ -56,6 +56,12 @@ class Activity(db.Model):
 	start_date = db.Column(db.String(22))
 	fetch_time = db.Column(db.Integer)
 
+class User(db.Model):
+	strava_user_id = db.Column(db.Integer, primary_key=True)
+	strava_access_token = db.Column(db.String(300))
+	strava_refresh_token = db.Column(db.String(300))
+	strava_access_token_expires_at = db.Column(db.Integer)
+
 class PlaceTotal(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	place_type = db.Column(db.String(7))
@@ -138,10 +144,25 @@ def update():
     			'grant_type': 'authorization_code'
 			}
 			r = requests.post("https://www.strava.com/oauth/token", params=payload)
-			print(r.text)
 			jsonResponse = r.json()
 			messages.append("Strava access token: " + jsonResponse['access_token'])
 			messages.append("token expires at: " + str(jsonResponse['expires_at']))
+			athlete_id = int(jsonResponse['athlete']['id'])
+			if db.session.query(User).filter_by(strava_user_id=athlete_id).count() == 0:
+				user = User()
+				user.strava_user_id = athlete_id
+				user.strava_access_token = jsonResponse['access_token']
+				user.strava_refresh_token = jsonResponse['refresh_token']
+				user.strava_access_token_expires_at = jsonResponse['expires_at']
+				db.session.add(user)
+				messages.append('Added Strava user ' + str(athlete_id) + '.')
+			else:
+				user = db.session.query(User).filter_by(strava_user_id=athlete_id).one()
+				user.strava_access_token = jsonResponse['access_token']
+				user.strava_refresh_token = jsonResponse['refresh_token']
+				user.strava_access_token_expires_at = jsonResponse['expires_at']
+				messages.append('Refreshed token for Strava user ' + str(athlete_id) + '.')
+			db.session.commit()
 			return render_template('setup.html', messages=messages)
 		else:
 			messages.append("Make changes and enter password to submit.")
