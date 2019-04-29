@@ -10,6 +10,9 @@ DATABASE_URL = os.environ['DATABASE_URL']
 STRAVA_TOKEN = os.environ['STRAVA_TOKEN']
 GOOGLE_MAPS_KEY = os.environ['GOOGLE_MAPS_KEY']
 SETUP_PASSWORD = os.environ['SETUP_PASSWORD']
+STRAVA_CLIENT_SECRET = os.environ['STRAVA_CLIENT_SECRET']
+STRAVA_CLIENT_ID = os.environ['STRAVA_CLIENT_ID']
+
 FETCH_COUNT = 50
 
 app = Flask(__name__)
@@ -148,7 +151,23 @@ def totals_update(): #WIP
 				count = count + 1
 				total_distance = total_distance + activity.distance
 
-
+def token_refresh():
+	users = db.session.query(User)
+	for user in users:
+		payload = {
+			'client_id': STRAVA_CLIENT_ID,
+			'client_secret': STRAVA_CLIENT_SECRET,
+			'grant_type': 'refresh_token',
+			'refresh_token': user.strava_refresh_token
+		}
+		r = requests.post("https://www.strava.com/oauth/token", params=payload)
+		jsonResponse = r.json()
+		user.strava_access_token = jsonResponse['access_token']
+		user.strava_refresh_token = jsonResponse['refresh_token']
+		user.strava_access_token_expires_at = jsonResponse['expires_at']
+		print("new tokens received: ")
+		print(jsonResponse)
+	db.session.commit()
 
 
 
