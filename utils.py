@@ -22,7 +22,7 @@ migrate = Migrate(app, db)
 class Activity(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	strava_user_id = db.Column(db.Integer)
-	strava_activity_id = db.Column(db.Integer)
+	strava_activity_id = db.Column(db.BigInteger)
 	strava_activity_name = db.Column(db.String(140))
 	latitude = db.Column(db.Float)
 	longitude = db.Column(db.Float)
@@ -82,12 +82,13 @@ def fetchstrava(after_time=0):
 			db.session.commit()
 		else:
 			print("Strava API error, response code: " + str(a.status_code))
+			print("Text: " + a.text)
 			done = True
 	print("Imported " + str(count) + " activities from Strava.")
 	return count
 
 def activityNameUpdate(after_time=0):
-	payload = {'access_token': STRAVA_TOKEN}
+	payload = {'bearer': STRAVA_TOKEN}
 	count = 0
 	done = False
 	page = 1
@@ -107,6 +108,7 @@ def activityNameUpdate(after_time=0):
 						count = count + 1
 		else:
 			print("Strava API error:" + str(a.status_code))
+			print("Text: " + a.text)
 			done = True
 	if count > 0:
 		db.session.commit()

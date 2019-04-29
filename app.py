@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
@@ -12,8 +12,12 @@ from worker import conn
 
 DATABASE_URL = os.environ['DATABASE_URL']
 STRAVA_TOKEN = os.environ['STRAVA_TOKEN']
+STRAVA_CLIENT_ID = os.environ['STRAVA_CLIENT_ID']
+STRAVA_CLIENT_SECRET = os.environ['STRAVA_CLIENT_SECRET']
 GOOGLE_MAPS_KEY = os.environ['GOOGLE_MAPS_KEY']
 SETUP_PASSWORD = os.environ['SETUP_PASSWORD']
+
+
 FETCH_COUNT = 200
 
 debug = True
@@ -40,7 +44,7 @@ from utils import fetchstrava
 class Activity(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	strava_user_id = db.Column(db.Integer)
-	strava_activity_id = db.Column(db.Integer)
+	strava_activity_id = db.Column(db.BigInteger)
 	strava_activity_name = db.Column(db.String(140))
 	latitude = db.Column(db.Float)
 	longitude = db.Column(db.Float)
@@ -126,8 +130,22 @@ def show_country(place):
 def update():
 	messages = []
 	if request.method == 'GET':
-		messages.append("Make changes and enter password to submit.")
-		return render_template('setup.html', messages=messages)
+		if request.args.get('code') is not None:
+			payload = {
+				'client_id': '24763',
+    			'client_secret': STRAVA_CLIENT_SECRET,
+    			'code': request.args.get('code'),
+    			'grant_type': 'authorization_code'
+			}
+			r = requests.post("https://www.strava.com/oauth/token", params=payload)
+			print(r.text)
+			jsonResponse = r.json()
+			messages.append("Strava access token: " + jsonResponse['access_token'])
+			messages.append("token expires at: " + str(jsonResponse['expires_at']))
+			return render_template('setup.html', messages=messages)
+		else:
+			messages.append("Make changes and enter password to submit.")
+			return render_template('setup.html', messages=messages)
 	if request.method == 'POST':
 		if request.form['psw'] == SETUP_PASSWORD:
 			for action in request.form.getlist('action'):
@@ -139,6 +157,8 @@ def update():
 					messages.append("Geocoding activities in the background.")
 				if action == "view_activity":
 					messages.append(fetchactivity(request.form['strava_id']))
+				if action == "authorize":
+					return redirect("https://www.strava.com/oauth/authorize?client_id=" + STRAVA_CLIENT_ID + "&redirect_uri=https://run.mattrichardson.com/setup&response_type=code&scope=activity:read_all")
 		else:
 			messages.append("Wrong password!")
 		return render_template('setup.html', messages=messages)
@@ -171,6 +191,7 @@ def show_year(year):
 	activity_count = activities.count()
 
 	return render_template('year.html', activities = activities, year=year, total_distance=total_distance, places=places, state_count=state_count, country_count=country_count, activity_count=activity_count)
+
 
 if __name__ == '__main__':
 	if debug:
