@@ -44,7 +44,7 @@ class PlaceTotal(db.Model):
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_KEY)
 
 def fetchstrava(after_time=0):
-	payload = {'Authorization': "Bearer #" + STRAVA_TOKEN}
+	payload = {'Authorization': "Bearer " + STRAVA_TOKEN}
 	count = 0
 	done = False
 	page = 1
@@ -88,7 +88,7 @@ def fetchstrava(after_time=0):
 	return count
 
 def activityNameUpdate(after_time=0):
-	payload = {'bearer': STRAVA_TOKEN}
+	payload = {'Authorization': "Bearer " + STRAVA_TOKEN}
 	count = 0
 	done = False
 	page = 1
