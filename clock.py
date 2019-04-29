@@ -23,10 +23,10 @@ def activity_checker():
 	strava_result = q.enqueue(utils.fetchstrava, after_time=after_time)
 
 
-@sched.scheduled_job('interval', minutes=1)
-def activity_name_updater():
-	print("Updating activity names...")
-	after_time = int(time.time()) - 86400
-	strava_result = q.enqueue(utils.activityNameUpdate, after_time=after_time)
+#@sched.scheduled_job('interval', minutes=1)
+#def activity_name_updater():
+#	print("Updating activity names...")
+#	after_time = int(time.time()) - 86400
+#	strava_result = q.enqueue(utils.activityNameUpdate, after_time=after_time)
 
 sched.start()
